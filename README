@@ -1,0 +1,51 @@
+This is a basic web applications that creates a bingo board based on tasks and activities that you can perform over a week to live a fulfilling life. The intention here was to better familiarize myself with some web technology as well as general project setup. In particular, I wanted to use Javascript, JSP, Maven, and MySql for this project.
+
+There are a few steps required if you want to deploy this project yourself. You will need to install both Maven (to generate the war file), MySql, and Tomcat. For the database MySql portion, you will need to set up tables and a database, of which you can find better instructions at the bottom of this readme. Finally, you will need to create a weeklylifebingo.config.properties based off of the weeklylifebingo.config.properties.example file in the config folder.
+
+Here are some queries that might be helpful as you set up your database.
+
+create table square_content
+(
+square_content_id INT unsigned NOT NULL AUTO_INCREMENT, title VARCHAR(50),
+description VARCHAR(200),
+resource_id INT,
+is_free_space BOOLEAN DEFAULT FALSE,
+status ENUM("Active", "Inactive") DEFAULT 'Active',
+PRIMARY KEY (square_content_id)
+);
+
+create table saved_board_instance
+(
+saved_board_instance_id INT unsigned NOT NULL AUTO_INCREMENT, board_name VARCHAR(50) NOT NULL,
+board_password VARCHAR(50) NOT NULL,
+board_salt VARCHAR(50) NOT NULL,
+PRIMARY KEY (saved_board_instance_id),
+UNIQUE (board_name)
+);
+
+create table square_instance
+(
+square_instance_id INT unsigned NOT NULL AUTO_INCREMENT, saved_board_instance_id INT unsigned NOT NULL,
+square_index INT unsigned NOT NULL,
+square_content_id INT unsigned NOT NULL,
+fill_status ENUM ("EMPTY", "PARTIAL", "FILLED") DEFAULT 'EMPTY',
+status ENUM("Active", "Inactive") DEFAULT 'Active',
+PRIMARY KEY (square_instance_id),
+FOREIGN KEY (square_content_id) REFERENCES square_content(square_content_id), FOREIGN KEY (saved_board_instance_id) REFERENCES saved_board_instance(saved_board_instance_id)
+);
+
+insert into square_content (title, description, is_free_space) VALUES ("FREE SPACE", "Live a worthwhile weekly life.", TRUE), ("Title 1", "Description of square 1." , FALSE), ("Title 2", "Description of square 2.", FALSE), ("Title 3", "Description of square 3.", FALSE), ("Title 4", "Description of square 4.", FALSE), ("Title 5", "Description of square 5.", FALSE), ("Title 6", "Description of square 6.", FALSE), ("Title 7", "Description of square 7.", FALSE), ("Title 8", "Description of square 8.", FALSE), ("Title 9", "Description of square 9.", FALSE), ("Title 10", "Description of square 10.", FALSE
+), ("Title 11", "Description of square 11.", FALSE), ("Title 12", "Description of square 12.", FALSE), ("Title 13", "Description of square 13.", FALSE), ("Title 14", "Description of square 14.", FALSE), ("Title 15", "Description of square 15.", FALSE), ("Title 16", "Description of square 16.", FALSE), ("Title 17", "Description of square 17.", FALSE), ("Title 18", "Description of square 18.", FALSE), ("Title 19", "Description of square 19.", FALSE), ("Title 20", "Description of square 20.", FALSE), ("Title 21", "Description of square 21.", FALSE), ("Title 22", "Description of square 22.", FALSE), ("Title 23", "Description of square 23.", FALSE), ("Title 24", "Description of square 24.", FALSE);
+
+After setting up your environment and the mysql database, you will need to run a maven command to generate the war file. Then you will need to move the generated war to the app folder of your Tomcat application, where it will be later unpacked into the production webapp.
+mvn clean install -U
+cp target/WeeklyLifeBingoMvn.war /Library/Tomcat/webapps/WeeklyLifeBingoMvn.war
+
+Finally, turn on Tomcat to start your local server. You should then be able to acces your Bingo webapp.
+/Library/Tomcat/bin/startup.sh
+http://localhost:8080/WeeklyLifeBingoMvn/
+
+In order to get logs out of this project, try tailing the following file:
+tail -f /Library/Tomcat/logs/catalina.out
+
+You can find this project deployed at the following url: http://www.dasugames.com/WeeklyLifeBingoMvn/bingodyn3

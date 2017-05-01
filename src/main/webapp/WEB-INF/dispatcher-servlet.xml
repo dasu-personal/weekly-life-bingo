@@ -1,0 +1,56 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	    http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+		xmlns:p="http://www.springframework.org/schema/p">
+
+	<context:component-scan base-package="com.dasugames.bingoboard.controllers" />
+	<context:component-scan base-package="com.dasugames.helloWorldExample" />
+
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix">
+			<value>/WEB-INF/views/</value>
+		</property>
+		<property name="suffix">
+			<value>.jsp</value>
+		</property>	
+	</bean>
+	
+	
+
+	<mvc:annotation-driven />
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+	
+	<!--  Where the properties file is to be found -->
+	<context:property-placeholder location="/resources/config/weeklylifebingo.config.properties"/>
+	
+	<!-- Definition for connection factory bean used in abstract bingo controller -->
+	<bean id = "sqlSource" class = "org.apache.tomcat.jdbc.pool.DataSource">
+	    
+	    <property name="driverClassName">
+			<value>com.mysql.jdbc.Driver</value>
+		</property>	
+		<property name="username">
+			<value>${mysql.username}</value>
+		</property>	
+		<property name="password">
+			<value>${mysql.password}</value>
+		</property>	
+		<property name="url">
+			<value>${mysql.url}</value>
+		</property>	
+	</bean>
+	
+
+
+
+	
+
+</beans>

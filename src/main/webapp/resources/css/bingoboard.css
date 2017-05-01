@@ -1,0 +1,102 @@
+.boardtitle {
+	font-size: 300px;
+	color: white;
+	padding-top: 0;
+	height: 0px;
+	text-align: center;
+}
+
+.board {
+	margin: auto;
+	background-color: red;
+	width: 1050px;
+	height: 2000px;
+	border-radius: 20px;
+	padding: 100px;
+}
+
+.boardgrid {
+	width: 1000px;
+	height: 1000px;
+	background-color: white;
+	border-radius: 20px;
+	color: black;
+	margin: auto;
+}
+
+.square {
+	width: 198px;
+	height: 198px;
+	border: 1px black solid;
+	float: left;
+}
+
+.square:hover {
+	background-color: yellow;
+}
+.fittext {
+	font-size: 32px;
+	word-wrap: break-word;
+}
+
+.markerFILLED {
+	width: 160px;
+	height: 160px;
+	border-radius: 50%;
+	color: black;
+	text-align: center;
+	font-size: 50px;
+	background: rgba(255, 0, 0, 0.6);
+	border: 20px solid rgba(225, 0, 0, 0.6);
+}
+
+.markerPARTIAL {
+	width: 160px;
+	height: 160px;
+	border-radius: 50%;
+	font-size: 50px;
+	text-align: center;
+	font-color: black;
+	border: 20px dashed rgba(0, 0, 0, 0.5);
+	background: rgba(255, 0, 0, 0);
+}
+
+.markerEMPTY {
+	width: 160px;
+	height: 160px;
+	border-radius: 50%;
+	color: black;
+	border: 20px dashed rgba(0, 0, 0, 0);
+	text-align: center;
+	font-size: 50px;
+	background: rgba(20, 0, 0, 0);
+}
+.overlay {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    background-color: rgba(127,127,127, 0.9);
+    overflow-x: hidden;
+    transition: 0.5s;
+}
+.menutab {
+    height: 80%;
+    width: 75px;
+    position: fixed;
+    z-index: 1;
+    top: 10%;
+    left: 0;
+    background-color: rgba(127,127,127, 0.9);
+    overflow-x: hidden;
+    transition: 0.5s;
+}
+.overlay-content {
+    position: relative;
+    top: 25%;
+    width: 100%;
+    text-align: center;
+    margin-top: 30px;
+}
