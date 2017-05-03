@@ -196,8 +196,14 @@ public class BingoBoardMarkServlet  extends AbstractBingoController {
 	}
 	
 
-	
-	private static List<BingoSquare> parseResultSetIntoBingoBoard(ResultSet rs) throws SQLException {
+	/**
+	 * This is distinct from the one in AbstractBingoController as it includes description.
+	 * I may want to make all of this more generic and consolidate the methods.
+	 * @param rs
+	 * @return
+	 * @throws SQLException
+	 */
+	static List<BingoSquare> parseResultSetIntoBingoBoard(ResultSet rs) throws SQLException {
 		List<BingoSquare> bingoBoard = new ArrayList<BingoSquare>();
 		while (rs.next()) {
 			BingoSquare currentSquare = new BingoSquare();

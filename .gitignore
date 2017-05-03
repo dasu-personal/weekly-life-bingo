@@ -1,1 +1,5 @@
+.classpath
+.project
+.settings/
+target/
 src/main/webapp/resources/config/weeklylifebingo.config.properties

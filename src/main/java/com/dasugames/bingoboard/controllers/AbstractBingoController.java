@@ -34,11 +34,7 @@ public abstract class AbstractBingoController {
 			return null;
 		}
 		
-		List<String> bingoSquareStrings = new ArrayList<String>(25);
-		for (BingoSquare bingoSquare : bingoBoard) {
-			bingoSquareStrings.add(bingoSquare.getContentId()+","+bingoSquare.getMarker());
-		}
-		String bingoBoardString = StringUtils.join(bingoSquareStrings,";");
+		String bingoBoardString = convertBingoBoardToCookieString(bingoBoard);
 		Cookie boardCookie = null;
 		try {
 			boardCookie = new Cookie("bingoboard", URLEncoder.encode(bingoBoardString, "UTF-8"));
@@ -48,8 +44,18 @@ public abstract class AbstractBingoController {
 		}
 		return boardCookie;
 	}
+
+	protected static String convertBingoBoardToCookieString(
+			List<BingoSquare> bingoBoard) {
+		List<String> bingoSquareStrings = new ArrayList<String>(25);
+		for (BingoSquare bingoSquare : bingoBoard) {
+			bingoSquareStrings.add(bingoSquare.getContentId()+","+bingoSquare.getMarker());
+		}
+		String bingoBoardString = StringUtils.join(bingoSquareStrings,";");
+		return bingoBoardString;
+	}
 	
-	protected static List<BingoSquare> parseBingoBoardCookieString(String cookie){
+	protected static List<BingoSquare> parseBingoBoardFromCookieString(String cookie){
 		String[] splitCookie = cookie.split(";");
 		if (splitCookie.length != 25) {
 			return null;
@@ -101,8 +107,6 @@ public abstract class AbstractBingoController {
 	}
 	
 	protected Connection getConnection() throws SQLException {
-		//ConnectionFactory connectionFactory = new ConnectionFactory();
-		//return connectionFactory.getConnection();
 		return sqlSource.getConnection();
 	}
 	
@@ -123,7 +127,6 @@ public abstract class AbstractBingoController {
 			while (rs.next() && bingoIter.hasNext()) {
 				BingoSquare bingoSquare = bingoIter.next();
 				
-				//Long index = rs.getLong("square_index");
 				String title = rs.getString("title");
 				String description = rs.getString("description");
 
@@ -152,45 +155,45 @@ public abstract class AbstractBingoController {
 				+ "ORDER BY length(rowId), rowId ASC;";
 
 		System.out.println(query);
-		List<BingoSquare> bingoBoard = new ArrayList<BingoSquare>(25);
+		
 		try (Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(query);) {
 
+			List<BingoSquare> bingoBoard = parseResultSetIntoBingoBoard(rs);
 			
-
-			while (rs.next()) {
-				BingoSquare currentSquare = new BingoSquare();
-				
-				long index = rs.getLong("rowId");
-				String title = rs.getString("title");
-				String status = rs.getString("fill_status");
-				long content_id = rs.getLong("square_content_id");
-				System.out.println(title);
-				System.out.println(index);
-				
-				currentSquare.setContent(title);
-				currentSquare.setMarker(MarkerType.valueOf(status));
-				currentSquare.setContentId((int) content_id);
-				bingoBoard.add(currentSquare);
-
-			}
+			return bingoBoard;
 		} catch (SQLException e) {
-			// TODO do the hokey pokey
 			System.out.println(e.getMessage());
 			return null;
+		}
+		
+	}
+
+	static List<BingoSquare> parseResultSetIntoBingoBoard(ResultSet rs)
+			throws SQLException {
+		List<BingoSquare> bingoBoard = new ArrayList<BingoSquare>(25);
+		while (rs.next()) {
+			BingoSquare currentSquare = new BingoSquare();
+			
+			String title = rs.getString("title");
+			String status = rs.getString("fill_status");
+			long content_id = rs.getLong("square_content_id");
+			
+			currentSquare.setContent(title);
+			currentSquare.setMarker(MarkerType.valueOf(status));
+			currentSquare.setContentId((int) content_id);
+			bingoBoard.add(currentSquare);
+
 		}
 		return bingoBoard;
 	}
 	
 	protected static String generateDecoratorQuery(List<BingoSquare> bingoBoard) {
-		/*
-		String queryString = "SELECT square_index title, description " + "FROM square_content JOIN ( "
-				+ "SELECT " + + " as square_index, " + + " as square_content_id "
-				+ "UNION "
-				+ "SELECT " + + " as square_index, " + + " as square_content_id "
-				+ ") subq ON square_content.square_content_id = subq.square_content_id "
-				+ "ORDER BY square_index ASC;";
-				*/
+		
+		if (bingoBoard == null || bingoBoard.size() != 25) {
+			throw new IllegalArgumentException("generate decorator query needs a bingo board of 25 squares");
+		}
+		
 		List<String> subQuery = new ArrayList<String>(25);
 		for (int i = 0; i < 25; i++) {
 			subQuery.add("SELECT " + i + " as square_index, " + bingoBoard.get(i).getContentId() + " as square_content_id ");
@@ -206,7 +209,7 @@ public abstract class AbstractBingoController {
 			Connection conn) {
 		List<BingoSquare> bingoBoard;
 		// parse out cookie into bingoboard
-		bingoBoard = parseBingoBoardCookieString(cookie);
+		bingoBoard = parseBingoBoardFromCookieString(cookie);
 		
 		// decorate cookie with query data
 		decorateBingoBoardWithQuery(bingoBoard, conn);
